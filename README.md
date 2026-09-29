@@ -32,8 +32,7 @@ The main objectives of the Campus Visitor Management System are:
 ### Visitor Registration
 
 Visitors can register their details and submit a request to visit the campus.
-Visitor access requires host approval.
-
+Visitor access requires security verification.
 ### User Authentication
 
 The system provides authentication for authorized users such as hosts and security personnel.
