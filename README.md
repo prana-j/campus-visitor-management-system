@@ -295,3 +295,9 @@ The project also demonstrates the use of Agile/Scrum practices and Git/GitHub-ba
 **Course:** Software Engineering
 **Course Code:** 23CCE302
 **Project:** Campus Visitor Management System
+
+---
+
+## 16. Documentation Update
+
+The project documentation is maintained using Git and GitHub to support collaborative development and version tracking.
