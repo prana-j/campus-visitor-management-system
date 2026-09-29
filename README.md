@@ -295,3 +295,14 @@ The project also demonstrates the use of Agile/Scrum practices and Git/GitHub-ba
 **Course:** Software Engineering
 **Course Code:** 23CCE302
 **Project:** Campus Visitor Management System
+## Visitor Verification and Check-In
+
+The Campus Visitor Management System supports visitor verification before campus entry. Security personnel can verify visitor details and record visitor check-in and check-out information as part of the visitor management process.
+
+### Visitor Verification
+
+Visitor details can be verified before allowing campus entry. This helps ensure that only approved and verified visitors are permitted to enter the campus.
+
+### Check-In and Check-Out
+
+Security personnel can record the visitor's entry and exit times. These records help maintain an accurate history of campus visitor activity.
