@@ -32,8 +32,7 @@ The main objectives of the Campus Visitor Management System are:
 ### Visitor Registration
 
 Visitors can register their details and submit a request to visit the campus.
-Visitor access requires authorized host approval.
-
+Visitor access requires authorized host approval and security verification.
 ### User Authentication
 
 The system provides authentication for authorized users such as hosts and security personnel.
@@ -296,3 +295,9 @@ The project also demonstrates the use of Agile/Scrum practices and Git/GitHub-ba
 **Course:** Software Engineering
 **Course Code:** 23CCE302
 **Project:** Campus Visitor Management System
+
+---
+
+## 16. Documentation Update
+
+The project documentation is maintained using Git and GitHub to support collaborative development and version tracking.
