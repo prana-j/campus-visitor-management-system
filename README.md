@@ -4,9 +4,9 @@
 
 The **Campus Visitor Management System** is a software system designed to manage and streamline the process of visitor registration, verification, approval, and entry within a campus.
 
-The system provides a structured workflow for visitors, hosts, security personnel, and management staff. It helps manage visitor requests, host approvals, visitor verification, badge issuance, check-in/check-out, notifications, reporting, and security-related records.
+The system provides a structured workflow for visitors, hosts, security personnel, and management staff. It helps manage visitor requests, host approvals, visitor verification, badge issuance, check-in/check-out, notifications, reporting, and security-related records.The system supports secure visitor registration and host approval.
 
-This project is developed as part of the **Software Engineering (23CCE302)** course.
+This project is developed as a Software Engineering group project.
 
 ---
 
