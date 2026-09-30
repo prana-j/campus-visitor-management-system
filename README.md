@@ -304,3 +304,4 @@ The project documentation is maintained using Git and GitHub to support collabor
 
 Campus Visitor Management System - Project Documentation
 Visitor registration and approval are managed through the system.
+System updates are synchronized with the main repository.
