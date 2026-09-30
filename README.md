@@ -303,3 +303,4 @@ The project also demonstrates the use of Agile/Scrum practices and Git/GitHub-ba
 The project documentation is maintained using Git and GitHub to support collaborative development and version tracking.
 
 Campus Visitor Management System - Project Documentation
+Visitor registration and approval are managed through the system.
