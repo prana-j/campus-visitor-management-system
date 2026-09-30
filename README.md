@@ -307,3 +307,4 @@ Visitor registration and approval are managed through the system.
 System updates are synchronized with the main repository.
 
 Feature branch documentation update by Kavya.
+Visitor search functionality has been improved for easier record lookup.
