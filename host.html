@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Host Dashboard | Campus Visitor System</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f4f4f4;color:#252525}
+header{background:#990f00;color:white;padding:18px 5%;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0}header p{font-size:13px}
+.logout{background:white;color:#990f00;padding:10px 15px;text-decoration:none;font-weight:bold}
+nav{background:#720b00;padding:12px 5%;display:flex;gap:22px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-size:14px}
+.container{max-width:1150px;margin:28px auto;padding:0 20px}
+.banner{background:#3a0008;color:white;padding:28px;margin-bottom:22px}
+.banner h2{margin-top:0}.banner p{line-height:1.6;color:#f1dede}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:24px}
+.card,.section{background:white;border:1px solid #ddd}
+.card{padding:20px;border-top:4px solid #990f00}.card p{font-size:13px;color:#666}.card h3{font-size:28px;color:#990f00}
+.section{margin-bottom:24px}.section h3{background:#990f00;color:white;padding:15px;font-size:17px;margin:0}
+.content{padding:20px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:750px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #eee;font-size:13px}
+th{background:#f8e9e7;color:#720b00}
+button{border:0;padding:9px 11px;margin:2px;border-radius:3px;font-weight:bold;cursor:pointer}
+.success{background:#276738;color:white}.primary{background:#990f00;color:white}.neutral{background:#e8e8e8;color:#222}
+label{display:block;font-weight:bold;font-size:13px;margin:12px 0 7px}
+select{width:100%;max-width:500px;padding:11px;border:1px solid #ccc;border-radius:3px}
+.notice{background:#f8e9e7;color:#720b00;padding:12px;margin-top:12px;font-size:13px}
+footer{text-align:center;padding:18px;background:white;border-top:1px solid #ddd;color:#777;font-size:12px}
+@media(max-width:650px){.stats{grid-template-columns:1fr}.banner h2{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div><h1>Campus Visitor Management System</h1><p>Host / Student Portal</p></div><a class="logout" href="/">Logout</a></header>
+<nav><a href="#overview">Overview</a><a href="#requests">Visit Requests</a><a href="#history">Visitor History</a><a href="#extensions">Visit Extensions</a><a href="#notifications">Notifications</a></nav>
+
+<main class="container">
+<section class="banner"><h2>Host / Student Dashboard</h2><p>Review visitor requests and record your decision before Admin's final review.</p></section>
+
+<section class="stats" id="overview">
+<div class="card"><p>Total Requests</p><h3 id="total">0</h3></div>
+<div class="card"><p>Awaiting Your Decision</p><h3 id="pending">0</h3></div>
+<div class="card"><p>Approved by Host</p><h3 id="approved">0</h3></div>
+</section>
+
+<section class="section" id="requests">
+<h3>Incoming Visit Requests</h3>
+<div class="content table-wrap">
+<table><thead><tr><th>Visitor</th><th>Phone</th><th>Visit Date</th><th>Purpose</th><th>Host Decision</th><th>Admin Decision</th><th>Actions</th></tr></thead><tbody id="requestTable"></tbody></table>
+<p class="notice">Host decisions are sent to Admin. They do not grant entry until Admin approves.</p>
+</div>
+</section>
+
+<section class="section" id="history">
+<h3>Visitor History</h3>
+<div class="content table-wrap">
+<table><thead><tr><th>Visitor</th><th>Date</th><th>Purpose</th><th>Host Decision</th><th>Admin Decision</th><th>Current Status</th></tr></thead><tbody id="historyTable"></tbody></table>
+</div>
+</section>
+
+<section class="section" id="extensions">
+<h3>Request a Visit Extension</h3>
+<div class="content">
+<form id="extensionForm">
+<label for="visitor">Visitor</label><select id="visitor" required><option value="">Select an Admin-approved visitor</option></select>
+<label for="duration">Additional Duration</label>
+<select id="duration" required><option value="">Select duration</option><option>15 minutes</option><option>30 minutes</option><option>1 hour</option><option>2 hours</option></select>
+<button class="primary" type="submit">Submit Extension Request</button>
+<p class="notice" id="extensionMessage" hidden></p>
+</form>
+</div>
+</section>
+
+<section class="section" id="notifications">
+<h3>Notifications</h3><div class="content"><ul id="notificationList" style="padding-left:20px;line-height:2"></ul></div>
+</section>
+</main>
+<footer>Campus Visitor Management System · Host Portal · Demo Version</footer>
+
+<script>
+const RECORDS="campusVisitorRecords";
+function read(){try{return JSON.parse(localStorage.getItem(RECORDS))||[]}catch{return []}}
+function save(records){localStorage.setItem(RECORDS,JSON.stringify(records))}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function render(){
+ const records=read();
+ const pending=records.filter(r=>!r.hostDecision);
+ const approved=records.filter(r=>r.hostDecision==="Approved");
+ document.getElementById("total").textContent=records.length;
+ document.getElementById("pending").textContent=pending.length;
+ document.getElementById("approved").textContent=approved.length;
+
+ document.getElementById("requestTable").innerHTML=records.map(r=>`
+ <tr><td>${esc(r.name)}</td><td>${esc(r.phone)}</td><td>${esc(r.date)}</td><td>${esc(r.purpose)}</td>
+ <td>${esc(r.hostDecision||"Awaiting decision")}</td><td>${esc(r.adminDecision||"Awaiting review")}</td>
+ <td>${!r.hostDecision?`
+ <button class="success" onclick="decide('${r.id}','Approved')">Approve</button>
+ <button class="primary" onclick="decide('${r.id}','Rejected')">Reject</button>`:"Decision submitted"}</td></tr>`).join("")||
+ '<tr><td colspan="7">No visitor requests yet.</td></tr>';
+
+ document.getElementById("historyTable").innerHTML=records.map(r=>`
+ <tr><td>${esc(r.name)}</td><td>${esc(r.date)}</td><td>${esc(r.purpose)}</td>
+ <td>${esc(r.hostDecision||"Pending")}</td><td>${esc(r.adminDecision||"Pending")}</td><td>${esc(r.status)}</td></tr>`).join("")||
+ '<tr><td colspan="6">No visitor history yet.</td></tr>';
+
+ document.getElementById("visitor").innerHTML=
+ '<option value="">Select an Admin-approved visitor</option>'+
+ records.filter(r=>r.adminDecision==="Approved"&&r.status!=="Checked Out").map(r=>
+ `<option value="${esc(r.id)}">${esc(r.name)} (${esc(r.id)})</option>`).join("");
+
+ const notifications=records.filter(r=>!r.hostDecision);
+ document.getElementById("notificationList").innerHTML=notifications.length?
+ notifications.map(r=>`<li>Decision needed for ${esc(r.name)} — ${esc(r.date)}</li>`).join(""):"<li>No pending host decisions.</li>";
+}
+
+function decide(id,decision){
+ const records=read();
+ const record=records.find(r=>r.id===id);
+ if(!record)return;
+ if(record.hostDecision){alert("A Host decision has already been recorded.");return}
+ record.hostDecision=decision;
+ record.status="Pending Admin Review";
+ record.hostDecisionAt=new Date().toLocaleString();
+ save(records);
+ render();
+ alert("Host decision recorded. The request is now available to Admin.");
+}
+
+document.getElementById("extensionForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const records=read();
+ const record=records.find(r=>r.id===document.getElementById("visitor").value);
+ const message=document.getElementById("extensionMessage");
+ if(!record){message.hidden=false;message.textContent="Please select a visitor.";return}
+ record.extension=document.getElementById("duration").value;
+ record.extensionStatus="Requested";
+ save(records);
+ message.hidden=false;message.textContent="Extension request recorded.";
+ e.target.reset();render();
+});
+
+window.addEventListener("storage",render);
+render();
+</script>
+</body>
+</html>

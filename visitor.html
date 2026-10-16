@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visitor Dashboard | Campus Visitor System</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f4f4f4;color:#252525}
+header{background:#990f00;color:white;padding:18px 5%;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0}header p{font-size:13px}
+.logout{background:white;color:#990f00;padding:10px 15px;text-decoration:none;font-weight:bold}
+nav{background:#720b00;padding:12px 5%;display:flex;gap:22px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-size:14px}
+.container{max-width:1150px;margin:28px auto;padding:0 20px}
+.banner{background:#3a0008;color:white;padding:28px;margin-bottom:22px}
+.banner h2{font-size:26px;margin-top:0}.banner p{line-height:1.6;color:#f1dede}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:24px}
+.card,.section{background:white;border:1px solid #ddd}
+.card{padding:20px;border-top:4px solid #990f00}.card p{font-size:13px;color:#666}.card h3{color:#990f00;font-size:27px}
+.section{margin-bottom:24px}.section h3{background:#990f00;color:white;padding:15px;font-size:17px;margin:0}
+.content{padding:20px}form .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 7px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ccc;border-radius:3px;font-size:14px}
+textarea{min-height:90px;resize:vertical}
+button{border:0;padding:11px 15px;margin-top:15px;background:#990f00;color:white;font-weight:bold;cursor:pointer;border-radius:3px}
+button:hover{background:#720b00}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #eee;font-size:13px}
+th{background:#f8e9e7;color:#720b00}
+.notice{padding:12px;background:#f8e9e7;color:#720b00;margin-top:12px;font-size:13px}
+footer{text-align:center;padding:18px;background:white;border-top:1px solid #ddd;color:#777;font-size:12px}
+@media(max-width:650px){.stats,form .grid{grid-template-columns:1fr}.banner h2{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>Campus Visitor Management System</h1><p>Visitor Portal</p></div>
+<a class="logout" href="/">Logout</a>
+</header>
+<nav>
+<a href="#overview">Overview</a>
+<a href="#register">Register Visit</a>
+<a href="#history">My Visits</a>
+<a href="#report">Report / Emergency</a>
+</nav>
+
+<main class="container">
+<section class="banner">
+<h2>Visitor Dashboard</h2>
+<p>Register campus visits, track approval decisions and report incidents to Security.</p>
+</section>
+
+<section class="stats" id="overview">
+<div class="card"><p>Total Visits</p><h3 id="total">0</h3></div>
+<div class="card"><p>Awaiting Host</p><h3 id="pending">0</h3></div>
+<div class="card"><p>Approved by Admin</p><h3 id="approved">0</h3></div>
+</section>
+
+<section class="section" id="register">
+<h3>Pre-register a Visit</h3>
+<div class="content">
+<form id="visitForm">
+<div class="grid">
+<div><label for="name">Full Name</label><input id="name" required placeholder="Enter your full name"></div>
+<div><label for="phone">Phone Number</label><input id="phone" required inputmode="numeric" placeholder="Enter phone number"></div>
+<div><label for="host">Host / Student Name</label><input id="host" required placeholder="Who are you visiting?"></div>
+<div><label for="date">Visit Date</label><input id="date" type="date" required></div>
+<div><label for="purpose">Purpose of Visit</label>
+<select id="purpose" required>
+<option value="">Select purpose</option><option>Meeting</option><option>Academic Visit</option><option>Document Delivery</option><option>Event</option><option>Personal Visit</option><option>Other</option>
+</select></div>
+<div><label for="type">Visit Type</label>
+<select id="type"><option>Pre-registration</option><option>Walk-in request</option></select></div>
+</div>
+<button type="submit">Submit Visit Request</button>
+<p id="formMessage" class="notice" hidden></p>
+</form>
+</div>
+</section>
+
+<section class="section" id="history">
+<h3>My Visit History & Status</h3>
+<div class="content table-wrap">
+<table>
+<thead><tr><th>Visit ID</th><th>Date</th><th>Host</th><th>Purpose</th><th>Host Decision</th><th>Admin Decision</th><th>Status</th></tr></thead>
+<tbody id="visits"></tbody>
+</table>
+<p class="notice">This demo stores records in this browser. Use test data only.</p>
+</div>
+</section>
+
+<section class="section" id="report">
+<h3>Report / Emergency — Send to Security</h3>
+<div class="content">
+<form id="reportForm">
+<div class="grid">
+<div><label for="reportName">Your Name</label><input id="reportName" required placeholder="Enter your name"></div>
+<div><label for="reportType">Report Type</label>
+<select id="reportType" required>
+<option value="">Select report type</option>
+<option>Medical Emergency</option><option>Safety / Security Concern</option><option>Suspicious Activity</option><option>Accident / Injury</option><option>Fire / Evacuation</option><option>Other</option>
+</select></div>
+</div>
+<label for="reportDetails">Describe the situation</label>
+<textarea id="reportDetails" required placeholder="Explain what happened and where help is needed"></textarea>
+<button type="submit">Send Report to Security</button>
+<p id="reportMessage" class="notice" hidden></p>
+</form>
+</div>
+</section>
+</main>
+<footer>Campus Visitor Management System · Visitor Portal · Demo Version</footer>
+
+<script>
+const RECORDS="campusVisitorRecords";
+const REPORTS="campusEmergencyReports";
+
+function read(key){try{return JSON.parse(localStorage.getItem(key))||[]}catch{return []}}
+function save(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function render(){
+ const records=read(RECORDS);
+ document.getElementById("total").textContent=records.length;
+ document.getElementById("pending").textContent=records.filter(r=>!r.hostDecision).length;
+ document.getElementById("approved").textContent=records.filter(r=>r.adminDecision==="Approved").length;
+ document.getElementById("visits").innerHTML=records.map(r=>`
+ <tr><td>${esc(r.id)}</td><td>${esc(r.date)}</td><td>${esc(r.host)}</td>
+ <td>${esc(r.purpose)}</td><td>${esc(r.hostDecision||"Awaiting decision")}</td>
+ <td>${esc(r.adminDecision||"Awaiting review")}</td><td>${esc(r.status)}</td></tr>`).join("")||
+ '<tr><td colspan="7">No visits registered yet.</td></tr>';
+}
+
+document.getElementById("visitForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const records=read(RECORDS);
+ records.unshift({
+  id:"VIS-"+Date.now(),
+  name:document.getElementById("name").value.trim(),
+  phone:document.getElementById("phone").value.trim(),
+  host:document.getElementById("host").value.trim(),
+  date:document.getElementById("date").value,
+  purpose:document.getElementById("purpose").value,
+  type:document.getElementById("type").value,
+  hostDecision:"",
+  adminDecision:"",
+  status:"Pending Host Review",
+  identityVerified:false,
+  badgeIssued:false,
+  checkIn:"",
+  checkOut:"",
+  extension:"",
+  createdAt:new Date().toLocaleString()
+ });
+ save(RECORDS,records);
+ const msg=document.getElementById("formMessage");
+ msg.hidden=false;msg.textContent="Visit request submitted. It is awaiting the Host's decision.";
+ e.target.reset();render();
+});
+
+document.getElementById("reportForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const reports=read(REPORTS);
+ reports.unshift({
+  id:"REP-"+Date.now(),
+  name:document.getElementById("reportName").value.trim(),
+  type:document.getElementById("reportType").value,
+  details:document.getElementById("reportDetails").value.trim(),
+  time:new Date().toLocaleString(),
+  status:"New"
+ });
+ save(REPORTS,reports);
+ const msg=document.getElementById("reportMessage");
+ msg.hidden=false;msg.textContent="Report sent to the Security dashboard.";
+ e.target.reset();
+});
+
+window.addEventListener("storage",render);
+render();
+</script>
+</body>
+</html>

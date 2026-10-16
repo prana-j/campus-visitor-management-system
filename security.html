@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security Dashboard | Campus Visitor System</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f4f4f4;color:#252525}
+header{background:#990f00;color:white;padding:18px 5%;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0}header p{font-size:13px}
+.logout{background:white;color:#990f00;padding:10px 15px;text-decoration:none;font-weight:bold}
+nav{background:#720b00;padding:12px 5%;display:flex;gap:22px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-size:14px}
+.container{max-width:1200px;margin:28px auto;padding:0 20px}
+.banner{background:#3a0008;color:white;padding:28px;margin-bottom:22px}
+.banner h2{margin-top:0}.banner p{color:#f1dede;line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:24px}
+.card,.section{background:white;border:1px solid #ddd}
+.card{padding:20px;border-top:4px solid #990f00}.card p{font-size:13px;color:#666}.card h3{font-size:28px;color:#990f00}
+.section{margin-bottom:24px}.section h3{background:#990f00;color:white;padding:15px;font-size:17px;margin:0}
+.content{padding:20px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #eee;font-size:13px}
+th{background:#f8e9e7;color:#720b00}
+button{border:0;padding:8px 10px;margin:2px;border-radius:3px;font-weight:bold;cursor:pointer}
+.primary{background:#990f00;color:white}.success{background:#276738;color:white}.neutral{background:#e8e8e8;color:#222}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ccc;border-radius:3px;font-size:14px}
+label{display:block;font-weight:bold;font-size:13px;margin:12px 0 7px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.notice{background:#f8e9e7;color:#720b00;padding:12px;margin-top:12px;font-size:13px}
+footer{text-align:center;padding:18px;background:white;border-top:1px solid #ddd;color:#777;font-size:12px}
+@media(max-width:650px){.stats,.formgrid{grid-template-columns:1fr}.banner h2{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div><h1>Campus Visitor Management System</h1><p>Security Officer Portal</p></div><a class="logout" href="/">Logout</a></header>
+<nav><a href="#overview">Overview</a><a href="#entry">Entry & Exit</a><a href="#reports">Reports / Emergencies</a><a href="#walkin">Walk-in Registration</a><a href="#blacklist">Blacklist</a><a href="#emergency">Emergency Log</a></nav>
+
+<main class="container">
+<section class="banner"><h2>Security Officer Dashboard</h2><p>Manage approved visitor entry, identity checks, badges, emergency reports and entry/exit records.</p></section>
+
+<section class="stats" id="overview">
+<div class="card"><p>Visitors Inside</p><h3 id="inside">0</h3></div>
+<div class="card"><p>Approved Visitors</p><h3 id="approved">0</h3></div>
+<div class="card"><p>Badges Issued</p><h3 id="badges">0</h3></div>
+</section>
+
+<section class="section" id="entry">
+<h3>Approved Visitor Entry & Exit</h3>
+<div class="content table-wrap">
+<table><thead><tr><th>Visitor</th><th>Host</th><th>Admin Decision</th><th>Identity</th><th>Badge</th><th>Entry / Exit</th></tr></thead><tbody id="visitorTable"></tbody></table>
+<p class="notice">Only Admin-approved visitors are listed here. Identity checks are simulated; do not use real personal identity data.</p>
+</div>
+</section>
+
+<section class="section" id="reports">
+<h3>Visitor Reports / Emergencies</h3>
+<div class="content table-wrap">
+<table><thead><tr><th>Report ID</th><th>Visitor</th><th>Type</th><th>Details</th><th>Time</th><th>Status / Action</th></tr></thead><tbody id="reportTable"></tbody></table>
+</div>
+</section>
+
+<section class="section" id="walkin">
+<h3>Walk-in Visitor Registration</h3>
+<div class="content">
+<form id="walkinForm">
+<div class="formgrid">
+<div><label for="walkName">Visitor Name</label><input id="walkName" required></div>
+<div><label for="walkPhone">Phone Number</label><input id="walkPhone" required inputmode="numeric"></div>
+<div><label for="walkHost">Host / Student</label><input id="walkHost" required></div>
+<div><label for="walkPurpose">Purpose of Visit</label><input id="walkPurpose" required></div>
+<div><label for="walkDate">Visit Date</label><input id="walkDate" type="date" required></div>
+</div>
+<button class="primary" type="submit">Send Walk-in Request to Host</button>
+<p id="walkinMessage" class="notice" hidden></p>
+</form>
+</div>
+</section>
+
+<section class="section" id="blacklist">
+<h3>Blacklist Check</h3>
+<div class="content">
+<form id="blackForm" style="display:flex;gap:10px;flex-wrap:wrap">
+<input id="searchName" placeholder="Enter visitor name to check" required style="flex:1;min-width:200px">
+<button class="primary" type="submit">Check Blacklist</button>
+</form>
+<p id="blackResult" class="notice" hidden></p>
+</div>
+</section>
+
+<section class="section" id="emergency">
+<h3>Emergency / Evacuation Log</h3>
+<div class="content">
+<form id="emergencyForm">
+<label for="eventDetails">Event details</label>
+<textarea id="eventDetails" required placeholder="Describe the drill or emergency event"></textarea>
+<button class="primary" type="submit">Record Event</button>
+</form>
+<ul id="emergencyList" style="margin:18px 0 0 20px;line-height:1.8"></ul>
+</div>
+</section>
+</main>
+<footer>Campus Visitor Management System · Security Portal · Demo Version</footer>
+
+<script>
+const RECORDS="campusVisitorRecords";
+const REPORTS="campusEmergencyReports";
+const BLACKLIST="campusVisitorBlacklist";
+const EVENTS="campusEmergencyEvents";
+function read(key){try{return JSON.parse(localStorage.getItem(key))||[]}catch{return []}}
+function save(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function render(){
+ const records=read(RECORDS).filter(r=>r.adminDecision==="Approved");
+ document.getElementById("inside").textContent=records.filter(r=>r.status==="Inside").length;
+ document.getElementById("approved").textContent=records.length;
+ document.getElementById("badges").textContent=records.filter(r=>r.badgeIssued).length;
+
+ document.getElementById("visitorTable").innerHTML=records.map(r=>`
+ <tr><td>${esc(r.name)}<br>${esc(r.phone)}</td><td>${esc(r.host)}</td><td>${esc(r.adminDecision)}</td>
+ <td>${r.identityVerified?"Verified":"Not verified"}<br><button class="neutral" onclick="verify('${r.id}')">Verify ID</button></td>
+ <td>${r.badgeIssued?"Issued":"Not issued"}<br><button class="neutral" onclick="issueBadge('${r.id}')">Issue Badge</button></td>
+ <td>${esc(r.status)}<br>
+ ${r.status==="Inside"?`<button class="primary" onclick="checkOut('${r.id}')">Check Out</button>`:
+ r.status==="Checked Out"?"Visit completed":`<button class="success" onclick="checkIn('${r.id}')">Check In</button>`}</td></tr>`).join("")||
+ '<tr><td colspan="6">No Admin-approved visitors are available.</td></tr>';
+
+ const reports=read(REPORTS);
+ document.getElementById("reportTable").innerHTML=reports.map(r=>`
+ <tr><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td>${esc(r.type)}</td><td>${esc(r.details)}</td><td>${esc(r.time)}</td>
+ <td>${esc(r.status)} ${r.status!=="Resolved"?`<button class="success" onclick="resolveReport('${r.id}')">Mark Resolved</button>`:""}</td></tr>`).join("")||
+ '<tr><td colspan="6">No reports submitted.</td></tr>';
+
+ document.getElementById("emergencyList").innerHTML=read(EVENTS).map(e=>`<li>${esc(e)}</li>`).join("")||
+ "<li>No emergency events recorded.</li>";
+}
+function updateRecord(id,fn){
+ const all=read(RECORDS),r=all.find(x=>x.id===id);
+ if(!r)return;
+ fn(r);save(RECORDS,all);render();
+}
+function verify(id){
+ updateRecord(id,r=>{r.identityVerified=true;r.identityVerifiedAt=new Date().toLocaleString()});
+ alert("Demo: identity marked as verified. No actual ID document was checked.");
+}
+function issueBadge(id){
+ const r=read(RECORDS).find(x=>x.id===id);
+ if(!r)return;
+ if(!r.identityVerified){alert("Verify the visitor's identity first.");return}
+ updateRecord(id,x=>{x.badgeIssued=true});
+ alert("Demo badge marked as issued.");
+}
+function checkIn(id){
+ const r=read(RECORDS).find(x=>x.id===id);
+ if(!r)return;
+ if(r.adminDecision!=="Approved"){alert("Admin approval is required.");return}
+ if(!r.identityVerified){alert("Verify the visitor's identity first.");return}
+ if(!r.badgeIssued){alert("Issue a badge first.");return}
+ updateRecord(id,x=>{x.status="Inside";x.checkIn=new Date().toLocaleTimeString()});
+}
+function checkOut(id){
+ updateRecord(id,x=>{x.status="Checked Out";x.checkOut=new Date().toLocaleTimeString()});
+}
+function resolveReport(id){
+ const reports=read(REPORTS),r=reports.find(x=>x.id===id);
+ if(r){r.status="Resolved";r.resolvedAt=new Date().toLocaleString();save(REPORTS,reports);render()}
+}
+document.getElementById("walkinForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const all=read(RECORDS);
+ all.unshift({
+  id:"VIS-"+Date.now(),
+  name:document.getElementById("walkName").value.trim(),
+  phone:document.getElementById("walkPhone").value.trim(),
+  host:document.getElementById("walkHost").value.trim(),
+  purpose:document.getElementById("walkPurpose").value.trim(),
+  date:document.getElementById("walkDate").value,
+  type:"Walk-in request",
+  hostDecision:"",
+  adminDecision:"",
+  status:"Pending Host Review",
+  identityVerified:false,
+  badgeIssued:false,
+  checkIn:"",
+  checkOut:"",
+  createdAt:new Date().toLocaleString()
+ });
+ save(RECORDS,all);
+ const m=document.getElementById("walkinMessage");m.hidden=false;m.textContent="Walk-in request sent for Host and Admin approval.";
+ e.target.reset();
+});
+document.getElementById("blackForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=document.getElementById("searchName").value.trim();
+ const match=read(BLACKLIST).some(b=>b.name.toLowerCase()===name.toLowerCase());
+ const result=document.getElementById("blackResult");result.hidden=false;
+ result.textContent=match?"ALERT: This name matches a demo blacklist entry. Follow campus procedures.":"No matching demo entry found. This is not a real background check.";
+});
+document.getElementById("emergencyForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const events=read(EVENTS);
+ events.unshift(new Date().toLocaleString()+" — "+document.getElementById("eventDetails").value.trim());
+ save(EVENTS,events);e.target.reset();render();
+});
+window.addEventListener("storage",render);
+render();
+</script>
+</body>
+</html>

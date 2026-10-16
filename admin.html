@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard | Campus Visitor System</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f4f4f4;color:#252525}
+header{background:#990f00;color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:22px;margin:0}header p{font-size:13px;margin-top:5px}
+.logout{background:white;color:#990f00;padding:10px 15px;text-decoration:none;font-weight:bold}
+nav{background:#720b00;padding:12px 5%;display:flex;gap:22px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-size:14px}
+.container{max-width:1200px;margin:28px auto;padding:0 20px}
+.welcome{background:#3a0008;color:white;padding:28px;margin-bottom:22px}
+.welcome h2{font-size:27px;margin-top:0}.welcome p{line-height:1.6;color:#f1dede}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:25px}
+.card,.section{background:white;border:1px solid #ddd}
+.card{padding:20px;border-top:4px solid #990f00}.card p{font-size:13px;color:#666}.card h3{font-size:29px;color:#990f00;margin-top:10px}
+.section{margin-bottom:24px}.section h3{background:#990f00;color:white;padding:15px;font-size:17px;margin:0}
+.content{padding:18px}.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #eee;font-size:13px}
+th{background:#f8e9e7;color:#720b00}
+button{border:0;padding:8px 10px;margin:2px;border-radius:3px;font-weight:bold;cursor:pointer}
+.primary{background:#990f00;color:white}.success{background:#276738;color:white}.neutral{background:#e8e8e8;color:#222}
+input{padding:10px;border:1px solid #ccc;border-radius:3px;max-width:100%}
+.formrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.status{font-weight:bold;color:#8a5700}.note{color:#666;font-size:12px;margin-top:10px}
+footer{text-align:center;background:white;border-top:1px solid #ddd;padding:18px;color:#777;font-size:12px}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.stats{grid-template-columns:1fr}.welcome h2{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div><h1>Campus Visitor Management System</h1><p>Administrator Portal</p></div><a class="logout" href="/">Logout</a></header>
+<nav><a href="#overview">Overview</a><a href="#requests">Visitor Requests</a><a href="#history">Visit History</a><a href="#blacklist">Blacklist</a><a href="#activity">System Activity</a></nav>
+
+<main class="container">
+<section class="welcome"><h2>Administrator Dashboard</h2><p>Review Host decisions, make final visit decisions, oversee campus access and monitor system activity.</p></section>
+
+<section class="stats" id="overview">
+<div class="card"><p>Total Visitors</p><h3 id="total">0</h3></div>
+<div class="card"><p>Awaiting Admin Review</p><h3 id="pending">0</h3></div>
+<div class="card"><p>Currently Inside</p><h3 id="inside">0</h3></div>
+<div class="card"><p>Blacklisted Entries</p><h3 id="blackCount">0</h3></div>
+</section>
+
+<section class="section" id="requests">
+<h3>Host Decisions & Final Admin Review</h3>
+<div class="content table-wrap">
+<table><thead><tr><th>Name</th><th>Phone</th><th>Host</th><th>Purpose</th><th>Host Decision</th><th>Admin Decision</th><th>Actions</th></tr></thead><tbody id="requestsTable"></tbody></table>
+<p class="note">Only visitors approved by Admin can proceed to Security check-in. Identity verification here is a demonstration only.</p>
+</div>
+</section>
+
+<section class="section" id="history">
+<h3>All Visitor Records & History</h3>
+<div class="content table-wrap">
+<table><thead><tr><th>Visitor</th><th>Host</th><th>Date</th><th>Host Decision</th><th>Admin Decision</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody id="historyTable"></tbody></table>
+</div>
+</section>
+
+<section class="section" id="blacklist">
+<h3>Blacklist Management — Demo</h3>
+<div class="content">
+<form id="blackForm" class="formrow">
+<input id="blackName" placeholder="Visitor name" required>
+<input id="blackReason" placeholder="Reason" required>
+<button class="primary" type="submit">Add to Blacklist</button>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Name</th><th>Reason</th><th>Action</th></tr></thead><tbody id="blackTable"></tbody></table></div>
+</div>
+</section>
+
+<section class="section" id="activity">
+<h3>System Activity</h3><div class="content"><ul id="activityList" style="padding-left:20px;line-height:2"></ul></div>
+</section>
+</main>
+<footer>Campus Visitor Management System · Administrator Portal · Demo Version</footer>
+
+<script>
+const RECORDS="campusVisitorRecords";
+const BLACKLIST="campusVisitorBlacklist";
+const ACTIVITY="campusSystemActivity";
+function read(key){try{return JSON.parse(localStorage.getItem(key))||[]}catch{return []}}
+function save(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function log(message){const list=read(ACTIVITY);list.unshift(new Date().toLocaleString()+" — "+message);save(ACTIVITY,list.slice(0,100))}
+function render(){
+ const records=read(RECORDS),blacklist=read(BLACKLIST),activities=read(ACTIVITY);
+ document.getElementById("total").textContent=records.length;
+ document.getElementById("pending").textContent=records.filter(r=>r.hostDecision&&!r.adminDecision).length;
+ document.getElementById("inside").textContent=records.filter(r=>r.status==="Inside").length;
+ document.getElementById("blackCount").textContent=blacklist.length;
+
+ document.getElementById("requestsTable").innerHTML=records.map(r=>`
+ <tr><td>${esc(r.name)}</td><td>${esc(r.phone)}</td><td>${esc(r.host)}</td><td>${esc(r.purpose)}</td>
+ <td>${esc(r.hostDecision||"Awaiting Host")}</td><td>${esc(r.adminDecision||"Awaiting Admin")}</td><td>
+ <button class="neutral" onclick="verify('${r.id}')">Verify</button>
+ ${r.hostDecision&&!r.adminDecision?`
+ <button class="success" onclick="finalDecision('${r.id}','Approved')">Final Approve</button>
+ <button class="primary" onclick="finalDecision('${r.id}','Rejected')">Final Reject</button>`:
+ r.adminDecision?"Decision recorded":"Awaiting Host"}
+ </td></tr>`).join("")||'<tr><td colspan="7">No visitor requests yet.</td></tr>';
+
+ document.getElementById("historyTable").innerHTML=records.map(r=>`
+ <tr><td>${esc(r.name)}</td><td>${esc(r.host)}</td><td>${esc(r.date)}</td>
+ <td>${esc(r.hostDecision||"—")}</td><td>${esc(r.adminDecision||"—")}</td>
+ <td>${esc(r.checkIn||"—")}</td><td>${esc(r.checkOut||"—")}</td><td>${esc(r.status)}</td></tr>`).join("")||
+ '<tr><td colspan="8">No records yet.</td></tr>';
+
+ document.getElementById("blackTable").innerHTML=blacklist.map(b=>`
+ <tr><td>${esc(b.name)}</td><td>${esc(b.reason)}</td><td><button class="neutral" onclick="removeBlack('${b.id}')">Remove</button></td></tr>`).join("")||
+ '<tr><td colspan="3">Blacklist is empty.</td></tr>';
+
+ document.getElementById("activityList").innerHTML=activities.map(a=>`<li>${esc(a)}</li>`).join("")||
+ "<li>No activity recorded yet.</li>";
+}
+function verify(id){
+ const r=read(RECORDS).find(x=>x.id===id);
+ if(r)alert("Demo identity review for "+r.name+". No actual ID document was checked.");
+}
+function finalDecision(id,decision){
+ const records=read(RECORDS),r=records.find(x=>x.id===id);
+ if(!r||!r.hostDecision||r.adminDecision){alert("This request is not awaiting Admin review.");return}
+ r.adminDecision=decision;
+ r.adminDecisionAt=new Date().toLocaleString();
+ r.status=decision==="Approved"?"Approved":"Rejected";
+ save(RECORDS,records);
+ log("Admin's final decision for "+r.name+": "+decision);
+ render();
+}
+document.getElementById("blackForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const list=read(BLACKLIST);
+ list.push({id:"BL-"+Date.now(),name:document.getElementById("blackName").value.trim(),reason:document.getElementById("blackReason").value.trim()});
+ save(BLACKLIST,list);log("A blacklist entry was added.");
+ e.target.reset();render();
+});
+function removeBlack(id){
+ save(BLACKLIST,read(BLACKLIST).filter(b=>b.id!==id));
+ log("A blacklist entry was removed.");render();
+}
+window.addEventListener("storage",render);
+render();
+</script>
+</body>
+</html>
